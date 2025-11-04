@@ -64,6 +64,43 @@
   font-size: 1.2rem;
 }
 
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+}
+
+.user-info i {
+  font-size: 1.2rem;
+}
+
+.user-name {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.logout-btn {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.logout-btn:hover {
+  background: rgba(255, 100, 100, 0.3);
+}
+
 @media (max-width: 768px) {
   .navbar-container {
     padding: 1rem;
@@ -73,8 +110,20 @@
     font-size: 1.2rem;
   }
 
+  .navbar-nav {
+    gap: 0.75rem;
+  }
+
   .nav-link {
     padding: 0.5rem;
     font-size: 0.9rem;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .user-info {
+    padding: 0.5rem;
   }
 }

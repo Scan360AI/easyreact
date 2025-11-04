@@ -26,20 +26,33 @@ export const useReportPolling = (reportId, interval = 5000) => {
       try {
         attemptCountRef.current += 1;
 
-        // Tenta di caricare il report
-        const data = await reportService.getReport(reportId);
+        // Tenta di caricare il report dal backend
+        const report = await reportService.getReport(reportId);
 
-        // Report trovato e completato
-        setReportData(data);
-        setStatus('completed');
-        setError(null);
+        // Check report status
+        if (report.status === 'completed' && report.payload) {
+          // Report completato con successo
+          setReportData(report.payload); // payload contiene i dati del report
+          setStatus('completed');
+          setError(null);
 
-        // Ferma il polling
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
+          // Ferma il polling
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+          }
+        } else if (report.status === 'failed') {
+          // Report fallito
+          setStatus('error');
+          setError(report.error_message || 'Report generation failed');
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+          }
+        } else {
+          // Report ancora in processing
+          setStatus('processing');
         }
       } catch (err) {
-        // Report non ancora pronto
+        // Errore nel caricamento (401, 404, network error, etc.)
         if (attemptCountRef.current >= maxAttempts) {
           // Timeout raggiunto
           setStatus('timeout');

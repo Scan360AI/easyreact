@@ -26,13 +26,9 @@ const ReportRequestForm = ({ onReportCreated }) => {
     setLoading(true);
 
     try {
-      // Per MVP: genera un ID temporaneo simulando la risposta di n8n
-      // In produzione, questo verrà dalla chiamata a reportService.createReport(formData)
-      const reportId = `rep-${Date.now()}`;
-
-      // Simula chiamata n8n (decommentare in produzione)
-      // const result = await reportService.createReport(formData);
-      // const reportId = result.reportId;
+      // Chiamata API backend per creare il report
+      const result = await reportService.createReport(formData);
+      const reportId = result.reportId;
 
       // Notifica il parent component (se fornito)
       if (onReportCreated) {
@@ -40,7 +36,7 @@ const ReportRequestForm = ({ onReportCreated }) => {
       }
 
       // Mostra messaggio di successo
-      alert(`Report richiesto con successo!\nID: ${reportId}\n\nSarai reindirizzato alla pagina del report.`);
+      alert(`Report richiesto con successo!\nID: ${reportId}\n\nIl report è in elaborazione. Sarai reindirizzato alla pagina di monitoraggio.`);
 
       // Reindirizza alla pagina del report
       navigate(`/report/${reportId}`);
@@ -54,7 +50,7 @@ const ReportRequestForm = ({ onReportCreated }) => {
       });
     } catch (error) {
       console.error('Errore nella richiesta del report:', error);
-      alert('Errore nella richiesta del report. Riprova più tardi.');
+      alert(`Errore nella richiesta del report: ${error.message}\n\nVerifica di essere autenticato e riprova.`);
     } finally {
       setLoading(false);
     }

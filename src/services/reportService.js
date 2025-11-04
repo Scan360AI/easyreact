@@ -1,32 +1,35 @@
 /**
  * Service per gestire le chiamate API relative ai report finanziari
+ * Ora integrato con backend API
  */
 
-// URL webhook n8n (da configurare in .env per produzione)
-const N8N_WEBHOOK_URL = process.env.REACT_APP_N8N_WEBHOOK_URL ||
-  'https://n8n.example.com/webhook/create-report';
+import authService from './authService';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 const reportService = {
   /**
    * Richiedi un nuovo report finanziario
-   * @param {Object} data - Dati della richiesta (piva, companyName, email, etc.)
+   * @param {Object} data - Dati della richiesta (piva, companyName, email, phone)
    * @returns {Promise} Response con reportId e status
    */
   async createReport(data) {
     try {
-      const response = await fetch(N8N_WEBHOOK_URL, {
+      const response = await fetch(`${API_URL}/api/reports`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...authService.getAuthHeader()
         },
         body: JSON.stringify(data)
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error(`Errore HTTP: ${response.status}`);
+        throw new Error(result.message || 'Errore nella creazione del report');
       }
 
-      const result = await response.json();
       return result;
     } catch (error) {
       console.error('Errore nella creazione del report:', error);
@@ -35,21 +38,39 @@ const reportService = {
   },
 
   /**
-   * Carica l'indice di tutti i report disponibili
-   * @returns {Promise} Lista dei report
+   * Carica la lista dei report dell'utente corrente
+   * @param {Object} filters - Filtri opzionali (status, search, from, to, limit, offset)
+   * @returns {Promise} Lista dei report con paginazione
    */
-  async getReportsIndex() {
+  async getMyReports(filters = {}) {
     try {
-      const response = await fetch('/data/reports-index.json');
+      // Build query string
+      const queryParams = new URLSearchParams();
+      if (filters.status) queryParams.append('status', filters.status);
+      if (filters.search) queryParams.append('search', filters.search);
+      if (filters.from) queryParams.append('from', filters.from);
+      if (filters.to) queryParams.append('to', filters.to);
+      if (filters.limit) queryParams.append('limit', filters.limit);
+      if (filters.offset) queryParams.append('offset', filters.offset);
 
-      if (!response.ok) {
-        throw new Error(`Errore HTTP: ${response.status}`);
-      }
+      const queryString = queryParams.toString();
+      const url = `${API_URL}/api/my/reports${queryString ? '?' + queryString : ''}`;
+
+      const response = await fetch(url, {
+        headers: {
+          ...authService.getAuthHeader()
+        }
+      });
 
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Errore nel caricamento dei report');
+      }
+
       return data;
     } catch (error) {
-      console.error('Errore nel caricamento dell\'indice report:', error);
+      console.error('Errore nel caricamento dei report:', error);
       throw error;
     }
   },
@@ -61,14 +82,20 @@ const reportService = {
    */
   async getReport(reportId) {
     try {
-      const response = await fetch(`/data/reports/${reportId}.json`);
-
-      if (!response.ok) {
-        throw new Error(`Report non trovato: ${reportId}`);
-      }
+      const response = await fetch(`${API_URL}/api/reports/${reportId}`, {
+        headers: {
+          ...authService.getAuthHeader()
+        }
+      });
 
       const data = await response.json();
-      return data;
+
+      if (!response.ok) {
+        throw new Error(data.message || `Report non trovato: ${reportId}`);
+      }
+
+      // Return the full report object with payload
+      return data.report;
     } catch (error) {
       console.error(`Errore nel caricamento del report ${reportId}:`, error);
       throw error;
@@ -76,19 +103,54 @@ const reportService = {
   },
 
   /**
-   * Verifica se un report è stato completato
-   * @param {string} reportId - ID del report da verificare
-   * @returns {Promise<boolean>} True se il report esiste ed è completo
+   * Elimina un report
+   * @param {string} reportId - ID del report da eliminare
+   * @returns {Promise} Conferma eliminazione
    */
-  async checkReportStatus(reportId) {
+  async deleteReport(reportId) {
     try {
-      const response = await fetch(`/data/reports/${reportId}.json`, {
-        method: 'HEAD' // Solo headers, non scarichiamo il contenuto
+      const response = await fetch(`${API_URL}/api/reports/${reportId}`, {
+        method: 'DELETE',
+        headers: {
+          ...authService.getAuthHeader()
+        }
       });
 
-      return response.ok;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Errore nell\'eliminazione del report');
+      }
+
+      return data;
     } catch (error) {
-      return false;
+      console.error(`Errore nell'eliminazione del report ${reportId}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get dashboard statistics
+   * @returns {Promise} Dashboard stats
+   */
+  async getStats() {
+    try {
+      const response = await fetch(`${API_URL}/api/my/stats`, {
+        headers: {
+          ...authService.getAuthHeader()
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Errore nel caricamento delle statistiche');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Errore nel caricamento delle statistiche:', error);
+      throw error;
     }
   }
 };
