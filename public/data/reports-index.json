@@ -1,0 +1,60 @@
+{
+  "reports": [
+    {
+      "id": "rep-kitzanos-001",
+      "companyId": "kitzanos",
+      "companyName": "KITZANOS SOCIETA COOPERATIVA",
+      "companyShortName": "KITZANOS SOC COOP",
+      "piva": "03748590928",
+      "reportDate": "2024-01-15",
+      "reportPeriod": "2024-Q1",
+      "reportType": "Analisi Finanziaria Completa",
+      "status": "completed",
+      "riskScore": 72.61,
+      "riskCategory": "B",
+      "dataFile": "/data/reports/rep-kitzanos-001.json",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "completedAt": "2024-01-15T10:32:15Z"
+    },
+    {
+      "id": "rep-acme-002",
+      "companyId": "acme",
+      "companyName": "ACME Corporation S.r.l.",
+      "companyShortName": "ACME Corp",
+      "piva": "12345678901",
+      "reportDate": "2024-02-10",
+      "reportPeriod": "2024-Q1",
+      "reportType": "Analisi Finanziaria Completa",
+      "status": "processing",
+      "riskScore": null,
+      "riskCategory": null,
+      "dataFile": null,
+      "createdAt": "2024-02-10T09:15:00Z",
+      "completedAt": null
+    },
+    {
+      "id": "rep-tecno-003",
+      "companyId": "tecno",
+      "companyName": "TECNO Solutions S.r.l.",
+      "companyShortName": "TECNO Solutions",
+      "piva": "98765432109",
+      "reportDate": "2024-03-05",
+      "reportPeriod": "2024-Q1",
+      "reportType": "Analisi Finanziaria Completa",
+      "status": "failed",
+      "riskScore": null,
+      "riskCategory": null,
+      "dataFile": null,
+      "createdAt": "2024-03-05T16:00:00Z",
+      "completedAt": null,
+      "error": "Dati azienda non trovati nel registro imprese"
+    }
+  ],
+  "metadata": {
+    "totalReports": 3,
+    "completedReports": 1,
+    "processingReports": 1,
+    "failedReports": 1,
+    "lastUpdated": "2024-03-05T16:00:00Z"
+  }
+}

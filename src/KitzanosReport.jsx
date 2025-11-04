@@ -143,23 +143,30 @@ const ExecutiveSummary = ({ data }) => {
 };
 
 // Componente Principale
-const KitzanosReport = () => {
-  const [reportData, setReportData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  
+const KitzanosReport = ({ data = null }) => {
+  const [reportData, setReportData] = useState(data);
+  const [loading, setLoading] = useState(!data);
+
   useEffect(() => {
-    // Carica i dati dal JSON
+    // Se i dati sono già forniti via props, non fare fetch
+    if (data) {
+      setReportData(data);
+      setLoading(false);
+      return;
+    }
+
+    // Altrimenti, carica i dati dal JSON (retrocompatibilità)
     fetch('/kitzanos-data.json')
       .then(response => response.json())
-      .then(data => {
-        setReportData(data);
+      .then(jsonData => {
+        setReportData(jsonData);
         setLoading(false);
       })
       .catch(error => {
         console.error('Errore nel caricamento dei dati:', error);
         setLoading(false);
       });
-  }, []);
+  }, [data]);
   
   if (loading) {
     return (

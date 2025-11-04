@@ -4,10 +4,11 @@
   "description": "Report Finanziario Professionale per KITZANOS SOCIETA COOPERATIVA",
   "private": true,
   "dependencies": {
+    "chart.js": "^4.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "chart.js": "^4.4.0"
+    "react-router-dom": "^7.9.5",
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
