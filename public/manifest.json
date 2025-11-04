@@ -1,0 +1,9 @@
+{
+  "short_name": "Kitzanos Report",
+  "name": "Kitzanos Financial Report",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2f3e9e",
+  "background_color": "#ffffff"
+}
