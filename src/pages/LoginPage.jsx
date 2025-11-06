@@ -113,6 +113,11 @@ const LoginPage = () => {
 
         <div className="auth-footer">
           <p>
+            <Link to="/password-reset-request">
+              Password dimenticata?
+            </Link>
+          </p>
+          <p>
             Non hai un account?{' '}
             <Link to="/register" state={{ from: location.state?.from }}>
               Registrati

@@ -6,6 +6,8 @@ import HomePage from './pages/HomePage';
 import ReportViewPage from './pages/ReportViewPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import PasswordResetRequestPage from './pages/PasswordResetRequestPage';
+import PasswordResetPage from './pages/PasswordResetPage';
 import './KitzanosReport.css';
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
         {/* Public routes (no auth required) */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/password-reset-request" element={<PasswordResetRequestPage />} />
+        <Route path="/password-reset" element={<PasswordResetPage />} />
 
         {/* Protected routes (auth required) */}
         <Route

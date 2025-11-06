@@ -8,9 +8,7 @@ const ReportRequestForm = ({ onReportCreated }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     piva: '',
-    companyName: '',
-    email: '',
-    phone: ''
+    ragione_sociale: ''
   });
 
   const handleChange = (e) => {
@@ -27,8 +25,9 @@ const ReportRequestForm = ({ onReportCreated }) => {
 
     try {
       // Chiamata API backend per creare il report
+      // Il service gestisce internamente: find/create company → create report
       const result = await reportService.createReport(formData);
-      const reportId = result.reportId;
+      const reportId = result.id || result.reportId;
 
       // Notifica il parent component (se fornito)
       if (onReportCreated) {
@@ -44,9 +43,7 @@ const ReportRequestForm = ({ onReportCreated }) => {
       // Reset form
       setFormData({
         piva: '',
-        companyName: '',
-        email: '',
-        phone: ''
+        ragione_sociale: ''
       });
     } catch (error) {
       console.error('Errore nella richiesta del report:', error);
@@ -59,9 +56,7 @@ const ReportRequestForm = ({ onReportCreated }) => {
   const handleReset = () => {
     setFormData({
       piva: '',
-      companyName: '',
-      email: '',
-      phone: ''
+      ragione_sociale: ''
     });
   };
 
@@ -87,49 +82,17 @@ const ReportRequestForm = ({ onReportCreated }) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="companyName">
+          <label htmlFor="ragione_sociale">
             <i className="ri-bank-line"></i>
-            Ragione Sociale *
+            Ragione Sociale (opzionale)
           </label>
           <input
             type="text"
-            id="companyName"
-            name="companyName"
-            value={formData.companyName}
+            id="ragione_sociale"
+            name="ragione_sociale"
+            value={formData.ragione_sociale}
             onChange={handleChange}
             placeholder="ACME Corporation S.r.l."
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="email">
-            <i className="ri-mail-line"></i>
-            Email *
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="info@azienda.it"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="phone">
-            <i className="ri-phone-line"></i>
-            Telefono
-          </label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="+39 333 1234567"
           />
         </div>
       </div>

@@ -29,8 +29,10 @@ export const useReportPolling = (reportId, interval = 5000) => {
         // Tenta di caricare il report dal backend
         const report = await reportService.getReport(reportId);
 
-        // Check report status
-        if (report.status === 'completed' && report.payload) {
+        // Check report status (case-insensitive per robustezza)
+        const reportStatus = (report.status || '').toUpperCase();
+
+        if (reportStatus === 'COMPLETED' && report.payload) {
           // Report completato con successo
           setReportData(report.payload); // payload contiene i dati del report
           setStatus('completed');
@@ -40,7 +42,7 @@ export const useReportPolling = (reportId, interval = 5000) => {
           if (timerRef.current) {
             clearInterval(timerRef.current);
           }
-        } else if (report.status === 'failed') {
+        } else if (reportStatus === 'FAILED' || reportStatus === 'ERROR') {
           // Report fallito
           setStatus('error');
           setError(report.error_message || 'Report generation failed');
@@ -48,7 +50,7 @@ export const useReportPolling = (reportId, interval = 5000) => {
             clearInterval(timerRef.current);
           }
         } else {
-          // Report ancora in processing
+          // Report ancora in processing (PROCESSING, PENDING, etc.)
           setStatus('processing');
         }
       } catch (err) {

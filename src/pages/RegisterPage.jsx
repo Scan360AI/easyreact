@@ -8,8 +8,9 @@ const RegisterPage = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: '',
+    nome: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -38,21 +39,25 @@ const RegisterPage = () => {
       return;
     }
 
-    // Validate password length
-    if (formData.password.length < 6) {
-      setError('La password deve essere di almeno 6 caratteri');
+    // Validate password length (minimum 8 characters as per API)
+    if (formData.password.length < 8) {
+      setError('La password deve essere di almeno 8 caratteri');
       setLoading(false);
       return;
     }
 
     try {
-      await authService.register(
+      const result = await authService.register(
         formData.email,
         formData.password,
-        formData.fullName
+        formData.nome || null
       );
-      // Redirect to the page they tried to visit or home
-      navigate(from, { replace: true });
+
+      // Mostra messaggio di successo per conferma email
+      if (result.requiresEmailConfirmation) {
+        setSuccess(true);
+        setError('');
+      }
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');
     } finally {
@@ -76,23 +81,33 @@ const RegisterPage = () => {
           </div>
         )}
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="fullName">
-              <i className="ri-user-line"></i>
-              Nome Completo
-            </label>
-            <input
-              type="text"
-              id="fullName"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              placeholder="Mario Rossi"
-              required
-              autoComplete="name"
-              autoFocus
-            />
+        {success && (
+          <div className="auth-success">
+            <i className="ri-mail-check-line"></i>
+            <div>
+              <strong>Registrazione completata!</strong>
+              <p>Controlla la tua email per confermare l'account prima di effettuare il login.</p>
+            </div>
+          </div>
+        )}
+
+        {!success && (
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="nome">
+                <i className="ri-user-line"></i>
+                Nome (opzionale)
+              </label>
+              <input
+                type="text"
+                id="nome"
+                name="nome"
+                value={formData.nome}
+                onChange={handleChange}
+                placeholder="Mario Rossi"
+                autoComplete="name"
+                autoFocus
+              />
           </div>
 
           <div className="form-group">
@@ -126,9 +141,9 @@ const RegisterPage = () => {
               placeholder="••••••••"
               required
               autoComplete="new-password"
-              minLength="6"
+              minLength="8"
             />
-            <small className="form-hint">Minimo 6 caratteri</small>
+            <small className="form-hint">Minimo 8 caratteri</small>
           </div>
 
           <div className="form-group">
@@ -165,14 +180,24 @@ const RegisterPage = () => {
               </>
             )}
           </button>
-        </form>
+          </form>
+        )}
 
         <div className="auth-footer">
           <p>
-            Hai già un account?{' '}
-            <Link to="/login" state={{ from: location.state?.from }}>
-              Accedi
-            </Link>
+            {success ? (
+              <>
+                Torna alla pagina di{' '}
+                <Link to="/login">Login</Link>
+              </>
+            ) : (
+              <>
+                Hai già un account?{' '}
+                <Link to="/login" state={{ from: location.state?.from }}>
+                  Accedi
+                </Link>
+              </>
+            )}
           </p>
         </div>
       </div>
